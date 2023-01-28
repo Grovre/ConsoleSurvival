@@ -8,6 +8,10 @@ public abstract class Game
     public bool IsRunning { get; private set; }
     public DateTime StartTime { get; private set; }
     public DateTime EndTime { get; private set; }
+    
+
+    public event Action? StartedGame;
+    public event Action? StoppedGame;
 
     protected Game()
     {
@@ -26,22 +30,24 @@ public abstract class Game
         StartTime = DateTime.Now;
         HasStarted = true;
         IsRunning = true;
-        OnStart();
+        StartedGame?.Invoke();
     }
 
     public void Stop()
     {
-        if (!HasStarted)
-            throw new GameNotStartedException
-                ("Tried stopping a game that hasn't started");
-            
-        if (HasStarted && !IsRunning)
-            throw new GameAlreadyStoppedException
-                ("Tried stopping a game that has already been stopped");
-        
+        switch (HasStarted)
+        {
+            case false:
+                throw new GameNotStartedException
+                    ("Tried stopping a game that hasn't started");
+            case true when !IsRunning:
+                throw new GameAlreadyStoppedException
+                    ("Tried stopping a game that has already been stopped");
+        }
+
         EndTime = DateTime.Now;
         IsRunning = false;
-        OnStop();
+        StoppedGame?.Invoke();
     }
 
     public TimeSpan GetRunningTime()
@@ -50,8 +56,4 @@ public abstract class Game
             return DateTime.Now - StartTime;
         return EndTime - StartTime;
     }
-
-    protected abstract void OnStart();
-
-    protected abstract void OnStop();
 }
