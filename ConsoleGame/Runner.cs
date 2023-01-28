@@ -1,9 +1,9 @@
-﻿namespace Game;
+﻿namespace ConsoleGame;
 
 public static class Runner
 {
     public static void Main()
     {
-        Console.WriteLine("Day 1");
+        var game = new ConsoleSurvivalGame();
     }
 }
