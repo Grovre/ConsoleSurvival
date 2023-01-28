@@ -4,18 +4,10 @@ namespace ConsoleGame;
 
 public class ConsoleSurvivalGame : Game
 {
-    public ConsoleSurvivalGame()
+    public ConsoleSurvivalGame(TextWriter consoleOutputWriter, TimeSpan gameLoopInterval, bool loopGameAsync = false) 
+        : base(consoleOutputWriter, gameLoopInterval, loopGameAsync)
     {
-        Console.WriteLine("ConsoleSurvivalGame created");
-    }
-
-    protected override void OnStart()
-    {
-        
-    }
-
-    protected override void OnStop()
-    {
-        
+        this.StartedGame += () => Console.WriteLine("Started game");
+        this.StoppedGame += () => Console.WriteLine("Stopped game");
     }
 }

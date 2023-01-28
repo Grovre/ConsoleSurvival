@@ -1,4 +1,5 @@
-﻿using GameInterfaces.Exceptions;
+﻿using GameFramework.Modules;
+using GameInterfaces.Exceptions;
 
 namespace GameFramework;
 
@@ -8,20 +9,27 @@ public abstract class Game
     public bool IsRunning { get; private set; }
     public DateTime StartTime { get; private set; }
     public DateTime EndTime { get; private set; }
+
+    public GameConsoleOutput ConsoleOutput { get; set; }
+    public GameLoop Loop { get; }
     
+    private readonly TimeSpan? _timeout;
 
     public event Action? StartedGame;
     public event Action? StoppedGame;
 
-    protected Game()
+    protected Game(TextWriter consoleOutputWriter, TimeSpan gameLoopInterval, bool loopGameAsync = false)
     {
         HasStarted = false;
         IsRunning = false;
         StartTime = DateTime.UnixEpoch;
         EndTime = DateTime.UnixEpoch;
+        _loopAsync = loopGameAsync;
+        ConsoleOutput = new(consoleOutputWriter);
+        Loop = new(gameLoopInterval);
     }
 
-    public void Start()
+    public Task Start()
     {
         if (HasStarted)
             throw new GameAlreadyStartedException
@@ -31,6 +39,7 @@ public abstract class Game
         HasStarted = true;
         IsRunning = true;
         StartedGame?.Invoke();
+        return Loop.StartAsync();
     }
 
     public void Stop()
@@ -44,7 +53,8 @@ public abstract class Game
                 throw new GameAlreadyStoppedException
                     ("Tried stopping a game that has already been stopped");
         }
-
+        
+        Loop.ContinueLooping = false;
         EndTime = DateTime.Now;
         IsRunning = false;
         StoppedGame?.Invoke();

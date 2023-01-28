@@ -1,14 +1,15 @@
 ﻿namespace GameFramework.Modules;
 
-public abstract class GameConsoleOutput
+public class GameConsoleOutput : IDisposable
 {
     private readonly TextWriter _writer;
 
     public event Action<string?>? TextWritten;
+    public event Action? WriterDisposed;
     public event Action? WriterClosed;
     public event Action? WriterFlushed;
 
-    protected GameConsoleOutput(TextWriter writer)
+    public GameConsoleOutput(TextWriter writer)
     {
         _writer = writer;
     }
@@ -25,6 +26,13 @@ public abstract class GameConsoleOutput
     {
         WriterFlushed?.Invoke();
         _writer.Flush();
+    }
+
+    public void Dispose()
+    {
+        _writer.Dispose();
+        GC.SuppressFinalize(this);
+        WriterDisposed?.Invoke();
     }
 
     public void Write(object? value)
