@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace GameInterfaces.Exceptions;
+namespace GameFramework.Exceptions;
 
 public class GameAlreadyStoppedException : Exception
 {

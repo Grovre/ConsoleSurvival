@@ -1,5 +1,5 @@
-﻿using GameFramework.Modules;
-using GameInterfaces.Exceptions;
+﻿using GameFramework.Exceptions;
+using GameFramework.Modules;
 
 namespace GameFramework;
 
@@ -12,21 +12,20 @@ public abstract class Game
 
     public GameConsoleOutput ConsoleOutput { get; set; }
     public GameLoop Loop { get; }
-    
-    private readonly TimeSpan? _timeout;
+    public PromptInput PromptSystem { get; }
 
     public event Action? StartedGame;
     public event Action? StoppedGame;
 
-    protected Game(TextWriter consoleOutputWriter, TimeSpan gameLoopInterval, bool loopGameAsync = false)
+    protected Game(TextWriter outputWriter, TextReader inputReader, TimeSpan gameLoopInterval)
     {
         HasStarted = false;
         IsRunning = false;
         StartTime = DateTime.UnixEpoch;
         EndTime = DateTime.UnixEpoch;
-        _loopAsync = loopGameAsync;
-        ConsoleOutput = new(consoleOutputWriter);
+        ConsoleOutput = new(outputWriter);
         Loop = new(gameLoopInterval);
+        PromptSystem = new(outputWriter, inputReader);
     }
 
     public Task Start()
