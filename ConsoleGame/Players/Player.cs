@@ -27,7 +27,8 @@ internal class Player : ISerializable, ICloneable, IComparable<Player>
 
     public object Clone()
     {
-        throw new NotImplementedException();
+        return new Player
+            (Name, Guid.NewGuid(), Health, (PlayerTraits)Traits.Clone());
     }
 
     public int CompareTo(Player? other)

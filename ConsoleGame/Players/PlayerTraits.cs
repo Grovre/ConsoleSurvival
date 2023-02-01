@@ -1,6 +1,8 @@
-﻿namespace ConsoleGame.Players;
+﻿using System.Runtime.Serialization;
 
-public class PlayerTraits
+namespace ConsoleGame.Players;
+
+public class PlayerTraits : ISerializable, ICloneable
 {
     
     public const int MinLuck = 0;
@@ -59,5 +61,15 @@ public class PlayerTraits
         Strength = 0;
         Agility = 0;
         Intelligence = 0;
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object Clone()
+    {
+        return new PlayerTraits(Luck, Strength, Agility, Intelligence);
     }
 }
