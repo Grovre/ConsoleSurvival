@@ -52,8 +52,8 @@ public abstract class Game
                 throw new GameAlreadyStoppedException
                     ("Tried stopping a game that has already been stopped");
         }
-        
-        Loop.ContinueLooping = false;
+
+        Loop.cancelLoopToken.Cancel(false);
         EndTime = DateTime.Now;
         IsRunning = false;
         StoppedGame?.Invoke();

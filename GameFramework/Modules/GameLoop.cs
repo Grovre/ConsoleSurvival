@@ -14,7 +14,7 @@ public class GameLoop
     }
     private readonly Timer _gateTimer;
     private readonly SemaphoreSlim _gate;
-    internal bool ContinueLooping { get; set; }
+    internal CancellationTokenSource cancelLoopToken;
     public nuint IterationCount { get; private set; } = 0;
 
     public event Action<nuint>? NextIteration;
@@ -22,6 +22,7 @@ public class GameLoop
     public GameLoop(TimeSpan interval)
     {
         _gate = new(1, 1);
+        cancelLoopToken = new();
         _gateTimer = new Timer(_ =>
         {
             try
@@ -39,8 +40,7 @@ public class GameLoop
 
     internal async Task StartAsync()
     {
-        ContinueLooping = true;
-        while (ContinueLooping)
+        while (!cancelLoopToken.IsCancellationRequested)
         {
             await _gate.WaitAsync();
             NextIteration?.Invoke(IterationCount);
